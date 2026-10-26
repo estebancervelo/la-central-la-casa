@@ -164,7 +164,7 @@ header .actions button{flex:0 0 auto;white-space:nowrap;padding:7px 9px;font-siz
  #v26WallClock{position:relative;grid-column:1;grid-row:1;justify-self:end;top:auto;right:auto;bottom:auto;margin-bottom:2px}
 }
 </style></head><body>
-<header><div><div class="tag">LA CASA · CONTROL ROOM</div><h1>CENTRAL DE PRODUCCIÓN <span class="live">●</span></h1><small>Rutina editable · tiempos · cues · notas · pantalla de aire</small></div><div class="actions"><button type="button" id="v25focus" aria-pressed="false" title="Ocultar paneles laterales para leer la rutina">⛶ MODO FOCO</button><button id="programToggle">Cambiar programa</button><button id="exportBtn">Exportar JSON</button><button id="importBtn">Importar</button><button id="screenBtn" class="primary">▣ PANTALLA</button></div></header>
+<header><div><div class="tag">LA CASA · CONTROL ROOM</div><h1>CENTRAL DE PRODUCCIÓN <span class="live">●</span></h1><small>Rutina editable · tiempos · cues · notas · pantalla de aire</small></div><div class="actions"><button type="button" id="v25focus" aria-pressed="false" title="Ocultar paneles laterales para leer la rutina">⛶ MODO FOCO</button><button id="programToggle">Cambiar programa</button><button type="button" id="aiCreateBtn" class="primary">✦ CREAR RUTINA</button><button type="button" id="editorialMemoryBtn" style="border-color:#6dd9ff;color:#a6edff">✦ MEMORIA EDITORIAL</button><button id="exportBtn">Exportar JSON</button><button id="importBtn">Importar</button><button id="screenBtn" class="primary">▣ PANTALLA</button></div></header>
 <div class="layout"><aside class="panel"><h2>⚙ CONFIGURACIÓN</h2><div class="field"><label>Programa</label><select id="program"><option>VALET PARKING</option><option>QUE ALGUIEN LE AVISE</option></select><div class="mini-status" style="margin-top:12px">RUTINAS GUARDADAS <strong id="routineCount">0</strong></div><div id="routineLibrary" class="routine-list"></div><button id="pdfUpload" class="primary" style="width:100%;margin-top:10px">＋ SUBIR RUTINA PDF</button><input id="pdfInput" type="file" accept=".pdf,application/pdf" multiple hidden><div class="mini-status" id="pdfStatus">Importá el PDF y se abrirá directamente. Los puntos se pueden marcar durante el vivo.</div></div><div class="mini-status" style="margin-bottom:10px">FECHA Y MESA: se completan desde el PDF cuando aparecen en el encabezado. Si falta un dato, queda pendiente sin inventarlo.</div><div class="field"><label>Fecha de emisión</label><input type="date" id="date"></div><div class="field"><label>Hora de inicio (referencia)</label><input type="time" id="start" value="11:30"></div><div class="field"><label>Conductores / mesa</label><textarea id="hosts" placeholder="Integrantes de la mesa"></textarea></div><div class="divider"></div><h2>⏱ CRONÓMETRO DE BLOQUE</h2><div class="timer" id="timer">00:00</div><div class="buttonrow"><button id="play" class="primary">▶ INICIAR</button><button id="pause">Ⅱ PAUSA</button><button id="reset">↺ RESET</button></div><div class="metric"><span class="muted">HORA ACTUAL</span><div class="clock" id="clock">--:--:--</div></div><div class="metric"><span class="muted">DURACIÓN TOTAL PLANIFICADA</span><div><strong id="total">90 min</strong></div></div><div class="divider"></div><h2>📝 NOTAS DE PRODUCCIÓN</h2><textarea id="notes" class="notes" placeholder="Cambios de último momento, coordinación, pendientes..."></textarea><small>Los cambios se guardan automáticamente en este navegador.</small></aside>
 <main class="panel"><div class="blocktop"><h2>📋 RUTINA DEL PROGRAMA</h2><button id="addBlock" class="primary">+ BLOQUE</button></div><div class="current"><span class="tag">EN CURSO / SELECCIONADO</span><h2 id="currentTitle">APERTURA</h2><div id="currentDetail" class="muted"></div><div id="currentChecklist" class="checkitems"></div><div class="progress"><div id="progressBar"></div></div><div class="buttonrow"><button id="previous">← ANTERIOR</button><button id="editBlock">✎ EDITAR</button><button id="next" class="primary">SIGUIENTE →</button></div></div><div id="blocks"></div></main>
 <aside class="panel right"><div class="blocktop"><h2>🎬 DISPARADORES / CUES</h2><button id="addCue">+ CUE</button></div><div id="cues"></div><div class="divider"></div><h2>🚦 ESTADO DE PRODUCCIÓN</h2><div class="metric"><div class="muted">BLOQUES COMPLETADOS</div><strong id="completed">0 / 0</strong></div><div class="metric"><div class="muted">BLOQUES RESTANTES</div><strong id="remaining">0</strong></div><div class="divider"></div><h2>💡 ATAJOS</h2><small>ESPACIO: iniciar/pausar reloj (fuera de campos de texto). Flechas ← →: cambiar bloque. ESC: cerrar pantalla.</small><div class="divider"></div><button id="resetAll" class="danger">Restaurar rutina de ejemplo</button></aside></div>
@@ -1247,4 +1247,126 @@ body.qala #v34fold{background:#563924;border-color:#d19a70;color:#fff1dc}
  setInterval(refresh,1300);refresh();
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./conexion.js"></script><script src="./bandeja.js"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="./conexion.js"></script><script src="./bandeja.js"></script>
+<style>
+#editorialMemoryDialog{width:min(850px,95vw);max-height:88vh;overflow:auto;background:#101e30;color:#eef7ff;border:1px solid #5288a9;border-radius:15px;padding:22px;box-shadow:0 15px 65px #000a}
+#editorialMemoryDialog::backdrop{background:#000b}
+#editorialMemoryDialog h2{margin:0 0 8px;color:#b4eaff}
+#editorialMemoryDialog h3{margin:18px 0 7px;color:#b4eaff;font-size:14px}
+#editorialMemoryDialog textarea{display:block;width:100%;box-sizing:border-box;min-height:115px;resize:vertical;font:12px/1.5 inherit;padding:12px;border-radius:9px}
+#editorialMemoryDialog .emActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+#editorialMemoryDialog p{font-size:12px;line-height:1.5;color:#bdcede}
+#editorialMemoryDialog .emNote{border:1px solid #48627b;background:#162b40;border-radius:8px;padding:11px}
+</style>
+<dialog id="editorialMemoryDialog" aria-label="Memoria editorial de VALET PARKING">
+ <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h2>✦ MEMORIA EDITORIAL · VALET PARKING</h2><button id="emClose">✕ CERRAR</button></div>
+ <p>Las reglas y los extractos del programa 129 ya están incorporados en esta versión. Podés sumar más rutinas o corregir criterios. Se guarda en este navegador; exportá un respaldo para trasladarlo a otro equipo.</p>
+ <h3>CRITERIOS EDITORIALES</h3><textarea id="emRules" spellcheck="false"></textarea>
+ <h3>ARCHIVO DE RUTINAS Y SECCIONES DE REFERENCIA</h3><textarea id="emArchive" spellcheck="false" style="min-height:210px"></textarea>
+ <div class="emActions"><button class="primary" id="emSave">✓ GUARDAR MEMORIA</button><button id="emExport">↓ EXPORTAR MEMORIA JSON</button><button id="emImport">↑ IMPORTAR MEMORIA JSON</button><input id="emImportFile" type="file" accept="application/json,.json" hidden></div>
+ <div class="emNote"><strong>Generación automática con noticias verificadas:</strong> requiere conectar un servicio de IA del lado del servidor. Este módulo incorpora y conserva el criterio editorial y los textos de referencia, pero no simula una investigación web ni genera noticias sin verificar.</div>
+ <p id="emStatus" role="status"></p>
+</dialog>
+<script>
+(()=>{
+ const key='lacasa-editorial-memory-v1';
+ const defaults={rules:`VALET PARKING — CRITERIOS PERMANENTES
+- Rutina editorial dinámica: apertura, actualidad, deportes, juegos, invitado y columnas solo cuando corresponda. No imponer bloques fijos.
+- Desarrollar cada tema con hechos, contexto, preguntas y sugerencias audiovisuales. No dejar títulos vacíos ni «tema a definir».
+- Títulos y consignas para aire en mayúsculas, estilo argentino ágil, breve y entretenido.
+- Seleccionar partidos por relevancia, polémicas, grandes goles o hechos extraordinarios, no por completar una lista.
+- FÓRMULA 1 siempre dentro de REPASO DEPORTIVO.
+- ELEGIMOS EL GOL DE LA FECHA siempre dentro de REPASO DEPORTIVO. Buscar golazos reales de viernes a domingo, en Argentina y el mundo, con video verificable; no incluir goles comunes solo para completar cinco.
+- COSITAS A SABER: noticias variadas y cortas; evitar repetir un mismo tema en dos secciones.
+- Recuperar juegos ya desarrollados; no rehacerlos si existen. Las columnas son opcionales y se pueden recuperar como plan B.
+- Nunca borrar, resumir ni modificar contenido previamente aprobado al corregir otro bloque. Cambiar únicamente lo solicitado.
+- Verificar nombres, fechas, resultados y enlaces antes de dar un borrador por listo. Si falta un dato, dejarlo explícito, no inventarlo.
+- Explicar por qué el tema le interesaría a la audiencia.
+- Entregar borrador editable; guardar solo tras aprobación del productor.`,archive:`PROGRAMA 129 — VIERNES 23/10/2026 — TEXTOS DE REFERENCIA
+
+LA LUPA DE CHECHU: ¿POR QUÉ CADA VEZ NOS CUESTA MÁS HACER AMIGOS NUEVOS?
+-¿SE DIERON CUENTA DE QUE CUANDO ÉRAMOS CHICOS HACER AMIGOS ERA FACILÍSIMO Y AHORA PARECE UNA ENTREVISTA DE TRABAJO?
+De chicos alcanzaba con compartir una pelota o sentarse al lado de alguien en el colegio. ¡Y LISTO, ERAN MEJORES AMIGOS!...Pero de grandes, entre el trabajo, las parejas, los hijos y las responsabilidades, conocer gente nueva se vuelve mucho más complicado.
+-¿QUÉ DICEN LOS ESTUDIOS?
+Una investigación de 2025 sobre jóvenes universitarios analizó cómo nuestras expectativas influyen en la forma de construir amistades…De chicos compartimos horas todos los días con las mismas personas. De adultos, tenemos que generar esos encuentros y dedicarles tiempo.
+-Y ACÁ VIENE LA PREGUNTA: ¿NOS CUESTA HACER AMIGOS NUEVOS O YA NO TENEMOS GANAS DE EMPEZAR UNA AMISTAD DESDE CERO?
+-¿CUÁNDO FUE LA ÚLTIMA VEZ QUE HICIERON UN AMIGO NUEVO DE VERDAD?
+-¿ES MÁS DIFÍCIL HACER AMIGOS O CONSEGUIR PAREJA?
+-¿ALGUNA VEZ QUISIERON HACERSE AMIGOS DE ALGUIEN Y NO SABÍAN CÓMO ACERCARSE?
+-¿SE PUEDE HACER UN AMIGO DE VERDAD EN EL TRABAJO?
+-¿CUÁNTOS AMIGOS NUEVOS HICIERON EN LOS ÚLTIMOS DOS AÑOS?
+
+JUEGO — ¿DE QUIÉN ES ESTA CARRERA? (ARGENTINOS EN ACTIVIDAD)
+–VAN A TENER LA CARRERA DE DISTINTOS FUTBOLISTAS ARGENTINOS EN ACTIVIDAD…ALGUNOS NO LLEGAN A 5 CLUBES…SINO EL MÁXIMO ES 5…
+-JUEGAN TODOS vs TODOS, EL PRIMERO QUE DIGA UN NOMBRE, SI ESTÁ BIEN, PUNTO, SI ESTÁ MAL NO PUEDE SEGUIR JUGANDO, EL RESTO PUEDE SEGUIR JUGANDO, PORQUE MIENTRAS MÁS PISTAS, MENOS EL PUNTAJE…
+
+JUEGO — ADIVINÁ EL JUGADOR CON PISTAS
+–VAN A TENER QUE ADIVINAR EL JUGADOR MIENTRAS VAMOS REVELANDO PISTAS DE ESTE JUGADOR OCULTO…
+-JUEGAN TODOS vs TODOS, EL PRIMERO QUE DIGA UN NOMBRE, SI ESTÁ BIEN, PUNTO, SI ESTÁ MAL NO PUEDE SEGUIR JUGANDO, EL RESTO PUEDE SEGUIR JUGANDO, PORQUE MIENTRAS MÁS PISTAS, MENOS EL PUNTAJE…
+
+LUNES 26/10/2026 — ESTRUCTURA APROBADA
+APERTURA: resumen del fin de semana de cada integrante.
+BLOQUE 1: MASSI Y SUS 50 MILLONES.
+BLOQUE 2: COSITAS A SABER (BALÓN DE ORO, ELECCIONES BRASIL, IA Y CINE).
+BLOQUE 3: REPASO DEPORTIVO (RIVER-RACING, BOCA-INDEPENDIENTE, BARCELONA-REAL MADRID, F1, ELEGIMOS EL GOL DE LA FECHA).
+BLOQUE 4: MOMENTO DE JUEGAZOSS (¿DE QUIÉN ES ESTA CARRERA? Y ADIVINÁ EL JUGADOR CON PISTAS).
+BLOQUE 5: LA LUPA DE CHECHU (PLAN B, COPIADA DEL 129).
+No dar por verificados los resultados deportivos de borradores anteriores sin revisar fuentes.`};
+ const $=id=>document.getElementById(id), dialog=$('editorialMemoryDialog');
+ function read(){try{const v=JSON.parse(localStorage.getItem(key));return v&&typeof v.rules==='string'&&typeof v.archive==='string'?v:defaults}catch{return defaults}}
+ function open(){const v=read();$('emRules').value=v.rules;$('emArchive').value=v.archive;$('emStatus').textContent='';dialog.showModal()}
+ $('editorialMemoryBtn').addEventListener('click',open);
+ $('emClose').addEventListener('click',()=>dialog.close());
+ $('emSave').addEventListener('click',()=>{try{localStorage.setItem(key,JSON.stringify({rules:$('emRules').value,archive:$('emArchive').value}));$('emStatus').textContent='✓ Memoria guardada en este navegador.'}catch(e){$('emStatus').textContent='No se pudo guardar: '+e.message}});
+ $('emExport').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({rules:$('emRules').value,archive:$('emArchive').value},null,2)],{type:'application/json'});const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='VALET_MEMORIA_EDITORIAL.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)});
+ $('emImport').addEventListener('click',()=>$('emImportFile').click());
+ $('emImportFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const v=JSON.parse(await f.text());if(typeof v.rules!=='string'||typeof v.archive!=='string')throw Error('El archivo no contiene memoria editorial válida');$('emRules').value=v.rules;$('emArchive').value=v.archive;$('emStatus').textContent='Memoria importada. Tocá GUARDAR MEMORIA para conservarla.'}catch(err){$('emStatus').textContent='Error: '+err.message}e.target.value=''});
+})();
+</script>
+
+<style>
+#aiRoutineDialog{width:min(690px,94vw);max-height:90vh;overflow:auto;border:1px solid #659ac1;background:#102337;color:#f4faff;border-radius:16px;padding:24px;box-shadow:0 30px 80px #000a}
+#aiRoutineDialog::backdrop{background:#000b}
+#aiRoutineDialog h2{margin:0 0 8px;font-size:22px;color:#b4edff}
+#aiRoutineDialog label{display:block;font-size:13px;margin:15px 0 5px;font-weight:700}
+#aiRoutineDialog input,#aiRoutineDialog textarea{width:100%;box-sizing:border-box;padding:12px;border-radius:9px;font-size:15px}
+#aiRoutineDialog textarea{min-height:75px;resize:vertical}
+#aiRoutineDialog .airow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+#aiRoutineDialog .airow button{padding:12px}
+#aiRoutineDialog .aismall{font-size:12px;color:#aec8d9;line-height:1.5}
+</style>
+<dialog id="aiRoutineDialog">
+ <h2>✦ CREAR RUTINA · VALET PARKING</h2>
+ <p class="aismall">Tres datos y la IA prepara una rutina completa con el estilo de la que armamos juntos. La propuesta queda para revisar: no reemplaza ni guarda la rutina actual sin tu confirmación.</p>
+ <label for="aiHosts">¿QUIÉNES ESTÁN EN MESA?</label><input id="aiHosts" placeholder="Cachete, Chechu, Massi, Barbi, Igna">
+ <label for="aiGuests">¿HAY INVITADOS?</label><textarea id="aiGuests" placeholder="No / Nombre, profesión y horario si se conoce"></textarea>
+ <label for="aiSpecial">¿HAY ALGO ESPECIAL?</label><textarea id="aiSpecial" placeholder="No / Columna, juego, aniversario, móvil, tema obligatorio..."></textarea>
+ <div class="airow"><button id="aiCancel">CANCELAR</button><button id="aiGenerate" class="primary">✦ GENERAR RUTINA FINAL</button></div>
+ <p id="aiStatus" class="aismall" role="status"></p>
+</dialog>
+<script>
+(()=>{
+ const $=id=>document.getElementById(id), d=$('aiRoutineDialog');
+ $('aiCreateBtn').onclick=()=>{if($('program').value!=='VALET PARKING'){alert('Esta memoria editorial está preparada para VALET PARKING.');return;} $('aiHosts').value=$('hosts').value||'Cachete, Chechu, Massi, Barbi e Igna';$('aiGuests').value='';$('aiSpecial').value='';$('aiStatus').textContent='';d.showModal()};
+ $('aiCancel').onclick=()=>d.close();
+ $('aiGenerate').onclick=async()=>{
+  const hosts=$('aiHosts').value.trim(),guests=$('aiGuests').value.trim()||'No hay invitados',special=$('aiSpecial').value.trim()||'Nada especial';
+  if(!hosts){$('aiStatus').textContent='Decime quién está en mesa.';return}
+  const btn=$('aiGenerate');btn.disabled=true;btn.textContent='INVESTIGANDO Y ESCRIBIENDO…';$('aiStatus').textContent='Consultando noticias y preparando bloques completos. Puede tardar un poco.';
+  try{
+   const memory=JSON.parse(localStorage.getItem('lacasa-editorial-memory-v1')||'null');
+   const date=$('date').value||new Date().toLocaleDateString('en-CA');
+   const res=await fetch('/.netlify/functions/crear-rutina',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date,hosts,guests,special,program:'VALET PARKING',memory})});
+   const payload=await res.json().catch(()=>({}));if(!res.ok)throw Error(payload.error||'No se pudo generar la rutina');
+   const routine=payload.routine;
+   if(!routine||!Array.isArray(routine.blocks)||routine.blocks.length<2)throw Error('La IA devolvió un formato incompleto');
+   if(!confirm('Rutina generada con '+routine.blocks.length+' bloques. ¿Abrirla en LA CENTRAL? La rutina actual se conserva en la biblioteca si estaba guardada.'))return;
+   const file=new File([JSON.stringify({...routine,program:'VALET PARKING',date,hosts,guests,special,cues:routine.cues||[],active:0},null,2)],'VALET_IA_'+date+'.json',{type:'application/json'});
+   const input=$('importFile'),dt=new DataTransfer();dt.items.add(file);input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));
+   d.close();
+  }catch(err){$('aiStatus').textContent='No se generó ninguna rutina: '+err.message+' (Si todavía no configuraste OPENAI_API_KEY en Netlify, hacelo para activar la IA).'}
+  finally{btn.disabled=false;btn.textContent='✦ GENERAR RUTINA FINAL'}
+ };
+})();
+</script>
+</body></html>

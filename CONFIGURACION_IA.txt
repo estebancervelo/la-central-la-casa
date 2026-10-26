@@ -1,0 +1,10 @@
+LA CENTRAL — PRODUCTOR IA
+
+1. Publicar este ZIP en Netlify como nuevo deploy (primero en un sitio de prueba).
+2. En Netlify > Site configuration > Environment variables, crear OPENAI_API_KEY con una clave propia de OpenAI API. No escribir la clave en index.html ni enviarla por chat.
+3. Redeploy para que la función serverless lea la variable.
+4. Abrir LA CENTRAL, elegir fecha, pulsar ✦ CREAR RUTINA, completar mesa, invitados y especiales, pulsar GENERAR RUTINA FINAL.
+5. Revisar la rutina generada. La IA investiga usando web_search_preview y puede equivocarse: corroborar datos sensibles antes de aire.
+6. La API de OpenAI se factura por separado de ChatGPT Plus.
+
+Esta versión incluye las reglas editoriales y el ejemplo del lunes 26/10 como referencia interna para la IA. No es posible generar noticias actuales con IA sin configurar el servicio externo.
