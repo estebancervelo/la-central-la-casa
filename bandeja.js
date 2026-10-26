@@ -43,6 +43,12 @@ const css=`
 `;
 const style=document.createElement('style');style.textContent=css;document.head.append(style);
 const launch=document.createElement('button');launch.id='bandeja-launch';launch.textContent='✦ BANDEJA DE IDEAS';document.body.append(launch);
+const headerTools=document.getElementById('lc-header-tools');
+if(headerTools){headerTools.append(launch);launch.textContent='✦ BANDEJA DE IDEAS'}
+const compactStyle=document.createElement('style');compactStyle.textContent=`
+#lc-header-tools #bandeja-launch{position:static!important;left:auto!important;bottom:auto!important;transform:none!important;z-index:auto!important;padding:8px 12px!important;border-radius:9px!important;font:800 11px/1.2 system-ui,Arial!important;letter-spacing:.025em!important;box-shadow:none!important;background:linear-gradient(100deg,#d43a9c,#7847e6)!important;border:1px solid #bc78e8!important;color:#fff!important;white-space:nowrap!important}
+`;document.head.append(compactStyle);
+
 const screen=document.createElement('section');screen.id='bandeja-screen';screen.hidden=true;screen.innerHTML=`<div class="bd-wrap"><div class="bd-head"><div><div class="bd-kicker">LA CASA · CENTRAL DE PRODUCCIÓN</div><h1>✦ BANDEJA DE IDEAS</h1><p class="bd-sub">Todo lo que enviaste desde EL RADAR, listo para incorporar a tus rutinas.</p></div><div class="bd-actions"><button id="bd-refresh">↻ ACTUALIZAR</button><button id="bd-close">✕ VOLVER A LA CENTRAL</button></div></div><div class="bd-controls"><input id="bd-search" placeholder="⌕ Buscar por noticia, tema o fuente..." aria-label="Buscar ideas"><select id="bd-program" aria-label="Filtrar programa"><option value="">TODOS LOS PROGRAMAS</option><option>VALET PARKING</option><option>QUE ALGUIEN LE AVISE</option></select><select id="bd-sort" aria-label="Orden"><option value="new">MÁS RECIENTES</option><option value="old">MÁS ANTIGUAS</option></select><button id="bd-clear">LIMPIAR FILTROS</button></div><div class="bd-tabs"><button data-tab="all" class="active">TODAS <span id="bd-all">0</span></button><button data-tab="pendiente">PENDIENTES <span id="bd-pending">0</span></button><button data-tab="incorporado">INCORPORADAS <span id="bd-done">0</span></button></div><p class="bd-small" id="bd-msg">Conectando con tu bandeja privada...</p><div class="bd-cards" id="bd-cards"></div></div>`;document.body.append(screen);
 const $=id=>document.getElementById(id),escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let items=[],tab='all';

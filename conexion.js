@@ -42,6 +42,25 @@ el.innerHTML=`<div class="lcrow"><h3>✦ RADAR ↔ CENTRAL</h3><button id="lctog
 ${IS_RADAR?`<label>Enviar a<select id="lcprogram"><option>VALET PARKING</option><option>QUE ALGUIEN LE AVISE</option></select></label><label>Bloque sugerido<input id="lcblock" placeholder="Ej.: COSITAS A SABER"></label><button class="lcmain" id="lcsend">✦ ENVIAR IDEA A LA CENTRAL</button>`:`<button id="lcrefresh">↻ ACTUALIZAR IDEAS RECIBIDAS</button><div id="lcinbox"></div>`}
 </div><p id="lcmsg" class="lcstatus"></p></div>`;
 document.body.append(el);
+// Accesos discretos bajo el titulo de Central, sin tapar la rutina.
+if(!IS_RADAR){
+ const titleArea=document.querySelector('body > header > div:first-child');
+ if(titleArea){
+  let nav=document.getElementById('lc-header-tools');
+  if(!nav){nav=document.createElement('div');nav.id='lc-header-tools';titleArea.append(nav)}
+  const button=document.createElement('button');button.type='button';button.id='lc-header-connection';button.textContent='↔ CONEXIÓN RADAR';button.setAttribute('aria-expanded','false');nav.append(button);
+  button.addEventListener('click',()=>{document.getElementById('lctoggle').click();button.setAttribute('aria-expanded',String(!el.classList.contains('lccollapsed')))});
+ }
+ const layoutStyle=document.createElement('style');layoutStyle.textContent=`
+ #lc-header-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+ #lc-header-tools button{position:static!important;inset:auto!important;transform:none!important;box-shadow:none!important;white-space:nowrap;font:800 11px/1.2 system-ui,Arial!important;letter-spacing:.025em!important;padding:8px 12px!important;border-radius:9px!important;min-width:0!important;width:auto!important;height:auto!important;max-width:none!important;margin:0!important;cursor:pointer}
+ #lc-header-connection{background:#17324b!important;color:#bde7fa!important;border:1px solid #3b7497!important}
+ #lccloud.lccollapsed{display:none!important}
+ #lccloud:not(.lccollapsed){position:fixed!important;top:155px!important;bottom:auto!important;left:16px!important;right:auto!important;transform:none!important;width:min(470px,calc(100vw - 32px))!important;max-height:calc(100vh - 175px)!important;z-index:9200!important}
+ @media(max-width:680px){#lccloud:not(.lccollapsed){top:100px!important;max-height:calc(100vh - 115px)!important}#lc-header-tools{margin-top:8px;gap:6px}}
+ `;document.head.append(layoutStyle);
+}
+
 const $=id=>document.getElementById(id), say=(msg,bad=false)=>{$('lcmsg').textContent=msg;$('lcmsg').className=bad?'lcerror':'lcstatus'};
 $('lctoggle').onclick=()=>{el.classList.toggle('lccollapsed');$('lctoggle').textContent=el.classList.contains('lccollapsed')?'ABRIR':'CERRAR'};
 let client=null,user=null;
