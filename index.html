@@ -1356,7 +1356,7 @@ No dar por verificados los resultados deportivos de borradores anteriores sin re
   try{
    const memory=JSON.parse(localStorage.getItem('lacasa-editorial-memory-v1')||'null');
    const date=$('date').value||new Date().toLocaleDateString('en-CA');
-   const res=await fetch('/api/crear-rutina',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date,hosts,guests,special,program:'VALET PARKING',memory})});
+   const res=await fetch('/.netlify/functions/crear-rutina',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date,hosts,guests,special,program:'VALET PARKING',memory})});
    const payload=await res.json().catch(()=>({}));if(!res.ok)throw Error(payload.error||'No se pudo generar la rutina');
    const routine=payload.routine;
    if(!routine||!Array.isArray(routine.blocks)||routine.blocks.length<2)throw Error('La IA devolvió un formato incompleto');
