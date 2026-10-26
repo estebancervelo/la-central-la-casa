@@ -1,0 +1,15 @@
+LA CENTRAL DE PRODUCCION · LA CASA
+Version base: CENTRAL_LA_CASA_V34_FINAL.html
+
+PUBLICACION EN NETLIFY:
+1. Crear un NUEVO repositorio GitHub llamado la-central-la-casa.
+2. Subir index.html y netlify.toml a la RAIZ del repositorio.
+3. En Netlify, Add new project > Import an existing project > GitHub.
+4. Elegir el nuevo repositorio, sin build command; Publish directory: .
+5. Deploy. Este proyecto es independiente de EL RADAR.
+
+NOTAS:
+- Se preserva el archivo HTML original V34 sin alterar sus funciones.
+- Los datos guardados en el navegador no se sincronizan entre dispositivos.
+- Para leer PDF, el navegador requiere internet para cargar PDF.js desde CDN.
+- No subas claves privadas ni archivos de datos personales al repositorio.
